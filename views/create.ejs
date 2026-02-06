@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<%- include('layouts/header') %>
+
+<body>
+<%- include('layouts/navbar') %>
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/assets/img/contact-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>Nouveau Post</h1>
+                    <span class="subheading">Partagez vos idées avec le monde</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+
+                <!-- Affichage des erreurs -->
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Erreur !</strong> <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+
+                <form action="/posts/store" method="POST" enctype="multipart/form-data" id="postForm">
+                    <!-- Titre -->
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="title" name="title" type="text"
+                               placeholder="Titre de l'article" required maxlength="200" />
+                        <label for="title">Titre</label>
+                    </div>
+
+                    <!-- Contenu -->
+                    <div class="form-floating mb-3">
+                            <textarea class="form-control" id="body" name="body"
+                                      placeholder="Contenu de l'article"
+                                      style="height: 12rem" required></textarea>
+                        <label for="body">Contenu</label>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Image de couverture</label>
+                        <input class="form-control" type="file" id="image" name="image"
+                               accept="image/jpeg,image/jpg,image/png,image/webp" />
+                        <div class="form-text">
+                            Formats acceptés : JPG, PNG, WEBP. Taille max : 5 Mo.
+                        </div>
+                    </div>
+
+                    <!-- Prévisualisation de l'image -->
+                    <div id="imagePreview" class="mb-3" style="display: none;">
+                        <img id="preview" src="" alt="Prévisualisation"
+                             class="img-fluid rounded" style="max-height: 300px;" />
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/" class="btn btn-secondary">Annuler</a>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-paper-plane"></i> Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('layouts/footer') %>
+<%- include('layouts/scripts') %>
+
+<!-- Script pour la prévisualisation d'image -->
+<script>
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('preview').src = event.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+</body>
+</html>
