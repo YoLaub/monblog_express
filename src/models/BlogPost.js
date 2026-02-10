@@ -14,7 +14,8 @@ const BlogPostSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        default: '/assets/img/home-bg.jpg'
+        default: '/assets/img/home-bg.jpg',
+        trim: true
     },
     datePosted: {
         type: Date,

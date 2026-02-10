@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<%- include('layouts/header') %>
+<body>
+<%- include('layouts/navbar') %>
+
+<header class="masthead" style="background-image: url('/assets/img/home-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>Connexion</h1>
+                    <span class="subheading">Accès réservé à l'administration</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div class="alert alert-danger"><%= error %></div>
+                <% } %>
+                <form action="/auth/login" method="POST">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" name="username" id="username" type="text" placeholder="Nom d'utilisateur" required />
+                        <label for="username">Nom d'utilisateur</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input class="form-control" name="password" id="password" type="password" placeholder="Mot de passe" required />
+                        <label for="password">Mot de passe</label>
+                    </div>
+                    <button class="btn btn-primary text-uppercase" type="submit">Se connecter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('layouts/footer') %>
+<%- include('layouts/scripts') %>
+</body>
+</html>

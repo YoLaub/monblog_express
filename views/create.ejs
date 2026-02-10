@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<%
+const isEdit = typeof blogpost !== 'undefined';
+const actionUrl = isEdit ? `/posts/update/${blogpost._id}` : '/posts/store';
+%>
 <html lang="fr">
 <%- include('layouts/header') %>
 
@@ -33,7 +37,29 @@
                     </div>
                 <% } %>
 
-                <form action="/posts/store" method="POST" enctype="multipart/form-data" id="postForm">
+                <form action="<%= actionUrl %>" method="POST" enctype="multipart/form-data" id="postForm">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="title" name="title" type="text"
+                               value="<%= isEdit ? blogpost.title : '' %>" required />
+                        <label for="title">Titre</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contenu</label>
+                        <div id="editor" style="height: 300px; background: white;">
+                            <%- isEdit ? blogpost.body : '' %>
+                        </div>
+                        <input type="hidden" name="body" id="body">
+                    </div>
+
+                    <!-- Prévisualisation image existante -->
+                    <% if (isEdit && blogpost.image) { %>
+                        <div class="mb-3">
+                            <p class="small text-muted">Image actuelle :</p>
+                            <img src="<%= blogpost.image %>" class="img-thumbnail" style="height: 100px">
+                        </div>
+                    <% } %>
+
                     <!-- Titre -->
                     <div class="form-floating mb-3">
                         <input class="form-control" id="title" name="title" type="text"
@@ -42,12 +68,14 @@
                     </div>
 
                     <!-- Contenu -->
-                    <div class="form-floating mb-3">
-                            <textarea class="form-control" id="body" name="body"
-                                      placeholder="Contenu de l'article"
-                                      style="height: 12rem" required></textarea>
-                        <label for="body">Contenu</label>
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Contenu de l'article</label>
+                        <!-- On remplace le textarea par un container pour Quill -->
+                        <div id="editor" style="height: 300px; background: white;"></div>
+                        <!-- Champ caché qui contiendra le HTML final pour l'envoi au serveur -->
+                        <input type="hidden" name="body" id="body">
                     </div>
+
 
                     <!-- Image -->
                     <div class="mb-3">
@@ -94,6 +122,36 @@
             reader.readAsDataURL(file);
         }
     });
+</script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script>
+    // Initialisation de l'éditeur
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'clean']
+            ]
+        }
+    });
+
+    // Synchronisation avant la soumission du formulaire
+    var form = document.getElementById('postForm');
+    form.onsubmit = function() {
+        // Récupérer le HTML généré par Quill
+        var body = document.querySelector('input[id=body]');
+        body.value = quill.root.innerHTML;
+
+        // Validation basique côté client
+        if(quill.getText().trim().length === 0) {
+            alert("Le contenu ne peut pas être vide");
+            return false;
+        }
+    };
 </script>
 </body>
 </html>

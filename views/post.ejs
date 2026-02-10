@@ -6,8 +6,8 @@
 <%- include('layouts/navbar') %>
 
 <!-- Page Header -->
-<header class="masthead" style="background-image: url('<%= blogpost.image %>')">
-    <div class="container position-relative px-4 px-lg-5">
+<header class="masthead" style="background-image: url('<%= encodeURI(blogpost.image) %>')">
+<div class="container position-relative px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
                 <div class="post-heading">
@@ -34,7 +34,9 @@
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
-                <p style="white-space: pre-wrap;"><%= blogpost.body %></p>
+                <div class="post-content">
+                    <%- blogpost.body %>
+                </div>
 
                 <!-- Métadonnées -->
                 <div class="mt-5 pt-4 border-top">
@@ -51,6 +53,18 @@
             </div>
         </div>
     </div>
+    <% if (loggedIn) { %>
+        <div class="admin-actions mb-4">
+            <a href="/posts/edit/<%= blogpost._id %>" class="btn btn-warning text-white">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <form action="/posts/delete/<%= blogpost._id %>" method="POST" class="d-inline" onsubmit="return confirm('Supprimer définitivement cet article ?')">
+                <button class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    <% } %>
 </article>
 
 <%- include('layouts/footer') %>

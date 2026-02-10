@@ -4,10 +4,30 @@ import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import fileUpload from 'express-fileupload';
 import dotenv from 'dotenv';
-
-// Import des routes
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import indexRouter from './routes/index.js';
 import postsRouter from './routes/posts.js';
+import authRouter from './routes/auth.js';
+import User from './models/User.js';
+
+async function createFirstUser() {
+    try {
+        const newUser = new User({
+            username: "Testeur",
+            email: "test@example.com",
+            password: "Admin01",
+            age: 25
+        });
+
+        await newUser.save();
+        console.log("Base de données mise à jour : Collection User créée !");
+    } catch (err) {
+        console.error("Erreur :", err);
+    }
+}
+
+// createFirstUser();
 
 // Configuration ESM pour __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +37,20 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 const app = express();
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'p0st_s3cur3_k3y',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 } // 24 heures
+}))
+
+// Middleware pour rendre le statut de connexion global aux vues EJS
+app.use((req, res, next) => {
+    res.locals.loggedIn = req.session.userId || null;
+    next();
+});
 
 // Configuration du moteur de template
 app.set('views', path.join(__dirname, '../views'));
@@ -46,6 +80,7 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
+app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 
