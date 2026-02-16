@@ -2,8 +2,8 @@ import { blogService } from '../services/blogService.js';
 
 export const postController = {
     renderCreate(req, res) {
-        // Passe les messages flash d'erreur à la vue
-        res.render('create', { title: 'Nouveau Post', error: req.flash('error') });
+        const [error] = req.flash('error'); // string ou undefined
+        res.render('create', { title: 'Nouveau Post', error });
     },
 
     async store(req, res, next) {

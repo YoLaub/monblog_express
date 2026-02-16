@@ -27,7 +27,7 @@ const actionUrl = isEdit ? `/posts/update/${blogpost._id}` : '/posts/store';
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
 
-                <% if (typeof error !== 'undefined' && error) { %>
+                <% if (error && error.length > 0) { %>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Erreur !</strong> <%= error %>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
