@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<%- include('layouts/header', { title: title || 'Inscription' }) %>
+
+<body>
+<%- include('layouts/navbar') %>
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('/assets/img/home-bg.jpg')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="page-heading">
+                    <h1>Créer un compte</h1>
+                    <span class="subheading">Inscris-toi pour publier des articles.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="mb-5">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-7 col-xl-6">
+
+                <%- include('layouts/flash') %>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-lg-5">
+                        <form action="/auth/register" method="POST" autocomplete="on">
+                            <div class="text-center mb-4">
+                                <div class="mb-2">
+                                    <i class="fa-solid fa-user-plus fa-2xl"></i>
+                                </div>
+                                <h2 class="h4 mb-1">Inscription</h2>
+                                <p class="text-muted mb-0">Renseigne un nom d’utilisateur et un mot de passe.</p>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input
+                                        class="form-control"
+                                        name="username"
+                                        id="username"
+                                        type="text"
+                                        placeholder="Nom d'utilisateur"
+                                        required
+                                        minlength="3"
+                                        autocomplete="username"
+                                />
+                                <label for="username"><i class="fa-regular fa-user me-2"></i>Nom d'utilisateur</label>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input
+                                        class="form-control"
+                                        name="password"
+                                        id="password"
+                                        type="password"
+                                        placeholder="Mot de passe"
+                                        required
+                                        minlength="8"
+                                        autocomplete="new-password"
+                                />
+                                <label for="password"><i class="fa-solid fa-lock me-2"></i>Mot de passe</label>
+                                <div class="form-text">Minimum 8 caractères.</div>
+                            </div>
+
+                            <div class="d-grid mt-4">
+                                <button class="btn btn-primary btn-lg text-uppercase" type="submit">
+                                    Créer mon compte
+                                </button>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <p class="text-center mb-0">
+                                Déjà un compte ?
+                                <a href="/auth/login">Se connecter</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('layouts/footer') %>
+<%- include('layouts/scripts') %>
+</body>
+</html>

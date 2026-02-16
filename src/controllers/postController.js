@@ -17,7 +17,10 @@ export const postController = {
             }
 
             const imageFile = req.files?.image;
-            await blogService.createPost({ title, body }, imageFile);
+            await blogService.createPost(
+                { title, body, userid: req.session.userId },
+                imageFile
+            );
 
             res.redirect('/');
         } catch (error) {

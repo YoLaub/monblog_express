@@ -8,44 +8,41 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const blogService = {
     async getAllPosts() {
-        return await BlogPost.find({}).sort({ datePosted: -1 }).lean();
+        return BlogPost.find({}).sort({datePosted: -1}); // <- pas lean
     },
 
     async getPostById(id) {
         return await BlogPost.findById(id);
     },
 
-    async createPost({ title, body }, imageFile) {
-        // image par défaut (optionnelle)
+    async createPost({ title, body, userid }, imageFile) {
         let imagePath = '/img/uploads/default.jpg';
 
         if (imageFile) {
             const timestamp = Date.now();
             const safeName = imageFile.name.replace(/\s+/g, '_');
             const fileName = `${timestamp}-${safeName}`;
-
-            // Fichier physique : public/img/uploads/...
             const uploadPath = path.join(__dirname, '../../public/img/uploads', fileName);
 
             await imageFile.mv(uploadPath);
-
-            // Chemin web stocké en BDD
             imagePath = `/img/uploads/${fileName}`;
         }
 
-        const cleanBody = sanitizeHtml(postData.body, {
+        const cleanBody = sanitizeHtml(body, {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(['h1', 'h2']),
-            allowedAttributes: { 'a': ['href', 'name', 'target'] }
+            allowedAttributes: { a: ['href', 'name', 'target'] }
         });
 
         const blogpost = await BlogPost.create({
             title,
-            cleanBody,
-            image: imagePath
+            body: cleanBody,     // <-- champ correct
+            image: imagePath,
+            userid              // <-- relation user (required si tu l’ajoutes au schema) [file:1]
         });
 
         return blogpost;
     },
+
 
     async updatePost(id, postData, file) {
         const post = await BlogPost.findById(id);

@@ -9,17 +9,19 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Le mot de passe est requis']
+        required: [true, 'Le mot de passe est requis'],
+        minlength: [8, 'Le mot de passe doit faire au moins 8 caractères']
     },
     role: {
         type: String,
-        default: 'admin' // Pour ce projet, on part sur un rôle admin par défaut
-    }
+        default: 'admin'
+    },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date }
 });
 
-// Middleware Mongoose pour hacher le mot de passe
 UserSchema.pre('save', async function() {
-    if (!this.isModified('password')) return next();
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 10);
 });
 

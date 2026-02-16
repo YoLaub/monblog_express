@@ -10,24 +10,9 @@ import indexRouter from './routes/index.js';
 import postsRouter from './routes/posts.js';
 import authRouter from './routes/auth.js';
 import User from './models/User.js';
-
-async function createFirstUser() {
-    try {
-        const newUser = new User({
-            username: "Testeur",
-            email: "test@example.com",
-            password: "Admin01",
-            age: 25
-        });
-
-        await newUser.save();
-        console.log("Base de données mise à jour : Collection User créée !");
-    } catch (err) {
-        console.error("Erreur :", err);
-    }
-}
-
-// createFirstUser();
+import flash from 'connect-flash';
+import notFoundRoutes from "./routes/notFoundRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Configuration ESM pour __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -48,7 +33,7 @@ app.use(session({
 
 // Middleware pour rendre le statut de connexion global aux vues EJS
 app.use((req, res, next) => {
-    res.locals.loggedIn = req.session.userId || null;
+    res.locals.loggedIn = !!req.session.userId;
     next();
 });
 
@@ -56,7 +41,7 @@ app.use((req, res, next) => {
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'ejs');
 
-// Middlewares modernes
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -65,6 +50,15 @@ app.use(fileUpload({
     abortOnLimit: true,
     createParentPath: true
 }));
+
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.successmsg = req.flash('success');
+    res.locals.errormsg = req.flash('error');
+    next();
+});
+
 
 // Connexion MongoDB avec gestion d'erreur améliorée
 const connectDB = async () => {
@@ -85,20 +79,9 @@ app.use('/', indexRouter);
 app.use('/posts', postsRouter);
 
 // Gestion des erreurs 404
-app.use((req, res) => {
-    res.status(404).render('error', {
-        message: 'Page non trouvée',
-        error: { status: 404 }
-    });
-});
+app.use(notFoundRoutes);
 
 // Gestionnaire d'erreurs global (Express v5 supporte les async!)
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.status || 500).render('error', {
-        message: err.message || 'Erreur interne du serveur',
-        error: process.env.NODE_ENV === 'development' ? err : {}
-    });
-});
+app.use(errorHandler);
 
 export default app;

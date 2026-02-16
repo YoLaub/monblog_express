@@ -17,6 +17,11 @@ const BlogPostSchema = new mongoose.Schema({
         default: '/assets/img/home-bg.jpg',
         trim: true
     },
+    userid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     datePosted: {
         type: Date,
         default: Date.now
@@ -40,19 +45,16 @@ BlogPostSchema.virtual('formattedDate').get(function() {
     });
 });
 
-// Méthode pour tronquer le contenu
-BlogPostSchema.methods.getExcerpt = function(length = 150) {
-    return this.body.length > length
-        ? this.body.substring(0, length) + '...'
-        : this.body;
-};
+BlogPostSchema.virtual('excerpt').get(function() {
+    const plain = (this.body || '').replace(/<[^>]*>/g, '');
+    return plain.length > 103 ? plain.slice(0, 103) + '...' : plain;
+});
 
-// Méthode statique pour récupérer les posts récents
-BlogPostSchema.statics.getRecent = function(limit = 10) {
-    return this.find()
+BlogPostSchema.statics.getRecentByUser = function(userId, limit = 10) {
+    return this.find({ userid: userId })
         .sort({ datePosted: -1 })
         .limit(limit)
-        .lean(); // lean() pour de meilleures performances
+        .lean();
 };
 
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
