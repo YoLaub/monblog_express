@@ -3,7 +3,9 @@ import { blogService } from '../services/blogService.js';
 export const pageController = {
     async renderHome(req, res, next) {
         try {
-            const blogposts = await blogService.getAllPosts();
+            const userId = req.session.userId;
+            const blogposts = await blogService.getAllPosts(userId);
+
             res.render('index', { blogposts, title: 'Clean Blog - Accueil' });
         } catch (error) {
             next(error);
